@@ -10,6 +10,12 @@ class FIFOCache(BaseCaching):
     put: assign items to the cache
     """
 
+    def __init__(self):
+        """initialize fifo class"""
+
+        super().__init__()
+        self.keys = []
+
     def put(self, key, item):
         """assign item to the cache"""
 
@@ -17,11 +23,11 @@ class FIFOCache(BaseCaching):
             return
 
         self.cache_data[key] = item
+        self.keys.append(key)
 
         if len(self.cache_data.keys()) > BaseCaching.MAX_ITEMS:
-            key_to_delete = list(self.cache_data.keys())[0]
-            del self.cache_data[key_to_delete]
-            print(f"DISCARD: {key_to_delete}")
+            del self.cache_data[self.keys[0]]
+            print(f"DISCARD: {self.keys[0]}")
 
     def get(self, key):
         """return item by key"""
