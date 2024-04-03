@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+"""task 3 solution"""
+
+from base_caching import BaseCaching
+
+
+class LRUCache(BaseCaching):
+    """implements LRUCache class"""
+
+    def __init__(self):
+        """initialize LRUCache class"""
+
+        super().__init__()
+        self.last_used = []
+
+    def put(self, key, item):
+        """add key, item pair to cache"""
+
+        if key is None or item is None:
+            return
+
+        self.cache_data[key] = item
+
+        if key in self.last_used:
+            self.last_used.remove(key)
+        self.last_used.append(key)
+
+        if len(self.cache_data.keys()) > BaseCaching.MAX_ITEMS:
+            key_to_delete = self.last_used[0]
+            self.last_used.remove(key_to_delete)
+            if key_to_delete in self.cache_data:
+                del self.cache_data[key_to_delete]
+                print(f"DISCARD: {key_to_delete}")
+
+    def get(self, key):
+        """return item in cache by key"""
+
+        if key in self.cache_data:
+            self.last_used.remove(key)
+            self.last_used.append(key)
+            return self.cache_data.get(key, None)
