@@ -4,6 +4,7 @@
 from flask import Flask, render_template, g, request
 from flask_babel import Babel, _
 from typing import Dict, Optional
+from pytz import timezone
 
 users = {
     1: {"name": "Balou", "locale": "fr", "timezone": "Europe/Paris"},
@@ -42,7 +43,6 @@ def before_request():
     """set user as a global variable"""
 
     g.user = get_user()
-    print(g.user)
 
 
 @babel.localeselector
@@ -62,13 +62,31 @@ def get_locale() -> str:
 
     return Config.BABEL.DEFAULT.LANGUAGE
 
+@babel.timezoneselector
+def get_timezone() -> str:
+    """get user timezone"""
+
+    time_zone = None
+
+    time_zone = request.args.get("timezone")
+    
+    if not time_zone and g.user and g.user.timezone:
+        time_zone = g.user.timezone
+
+    try:
+        if time_zone and time_zone in pytz.alltimezones:
+            return time_zone
+    except pytz.exceptions.UnknownTimeZoneError:
+        print("Unknown timezone")
+
+    return "UTC"
 
 @app.route("/")
 def index() -> str:
     """render the index page"""
 
     return render_template(
-        "6-index.html",
+        "7-index.html",
         title=_("home_title"),
         header=_("home_header"),
     )
