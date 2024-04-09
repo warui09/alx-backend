@@ -3,6 +3,7 @@
 
 from flask import Flask, render_template, g, request
 from flask_babel import Babel, _
+from typing import Dict, Optional
 
 users = {
     1: {"name": "Balou", "locale": "fr", "timezone": "Europe/Paris"},
@@ -25,18 +26,23 @@ app.config.from_object(Config)
 babel = Babel(app)
 
 
-def get_user() -> str:
+def get_user() -> Optional[Dict]:
     """get user if user exists"""
 
     user_id = request.args.get("login_as")
-    return users.get(user_id)
+
+    if user_id:
+        return users.get(int(user_id))
+
+    return None
 
 
 @app.before_request
 def before_request():
     """set user as a global variable"""
 
-    flask.g.user = get_user()
+    g.user = get_user()
+    print(g.user)
 
 
 @babel.localeselector
@@ -55,7 +61,9 @@ def index() -> str:
     """render the index page"""
 
     return render_template(
-        "5-index.html", title=_("home_title"), header=_("home_header")
+        "5-index.html",
+        title=_("home_title"),
+        header=_("home_header"),
     )
 
 
