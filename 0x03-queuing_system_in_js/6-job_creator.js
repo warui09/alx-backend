@@ -1,7 +1,6 @@
 const kue = require('kue');
 const queue = kue.createQueue();
 
-const jobDataFormat = { phoneNumber: String, message: String };
 const jobObject = { phoneNumber: '1234567890', message: 'Hello, world!' };
 
 const pushNotificationQueue = kue.createQueue();
